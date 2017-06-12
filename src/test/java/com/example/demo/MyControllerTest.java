@@ -4,7 +4,6 @@ import com.example.demo.dto.AnotherDTO;
 import com.example.demo.dto.SomeDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -20,6 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.BigDecimal;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -53,15 +54,27 @@ public class MyControllerTest {
         Mockito.verify(service, VerificationModeFactory.only()).processSomeDTO(someDTO);
     }
 
-    @Ignore//FIXME need to add custom validation (no javax) to controllers
     @Test
-    public void invalidSomeDtoRequest() throws Exception {
+    public void invalidSomeDtoRequest_customValidator() throws Exception {
         //given a corrupted dto
         BigDecimal invalidValue = someDTO.getNumberOfSomething().add(BigDecimal.ONE);
         someDTO.setNumberOfSomething(invalidValue);
         mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/somedto")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(mapper.writeValueAsString(someDTO)));
+                .content(mapper.writeValueAsString(someDTO)))
+                .andExpect(status().isUnprocessableEntity());
+        //so a service method SHOULDN'T be invoked
+        Mockito.verify(service, VerificationModeFactory.noMoreInteractions()).processSomeDTO(someDTO);
+    }
+
+    @Test
+    public void invalidSomeDtoRequest_javaxValidator() throws Exception {
+        //given a corrupted dto
+        someDTO.setId(-5);
+        mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/somedto")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(mapper.writeValueAsString(someDTO)))
+                .andExpect(status().isUnprocessableEntity());
         //so a service method SHOULDN'T be invoked
         Mockito.verify(service, VerificationModeFactory.noMoreInteractions()).processSomeDTO(someDTO);
     }
@@ -76,15 +89,27 @@ public class MyControllerTest {
         Mockito.verify(service, VerificationModeFactory.only()).processAnotherDTO(anotherDTO);
     }
 
-    @Ignore//FIXME need to add custom validation (no javax) to controllers
     @Test
-    public void invalidAnotherDtoRequest() throws Exception {
+    public void invalidAnotherDtoRequest_customValidator() throws Exception {
         //given a corrupted dto
         BigDecimal invalidValue = anotherDTO.getSomeMagicNumber().add(BigDecimal.ONE);
         anotherDTO.setSomeMagicNumber(invalidValue);
         mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/anotherdto")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(mapper.writeValueAsString(anotherDTO)));
+                .content(mapper.writeValueAsString(anotherDTO)))
+                .andExpect(status().isUnprocessableEntity());
+        //so a service method SHOULDN'T be invoked
+        Mockito.verify(service, VerificationModeFactory.noMoreInteractions()).processAnotherDTO(anotherDTO);
+    }
+
+    @Test
+    public void invalidAnotherDtoRequest_javaxValidator() throws Exception {
+        //given a corrupted dto
+        anotherDTO.setId(-33);
+        mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/anotherdto")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(mapper.writeValueAsString(anotherDTO)))
+                .andExpect(status().isUnprocessableEntity());
         //so a service method SHOULDN'T be invoked
         Mockito.verify(service, VerificationModeFactory.noMoreInteractions()).processAnotherDTO(anotherDTO);
     }

@@ -1,4 +1,4 @@
-#spring-mvc-and-jms-validation-POC
+# spring-mvc-and-jms-validation-POC
 
 POC of implementing validation in Spring framework based web applications
 

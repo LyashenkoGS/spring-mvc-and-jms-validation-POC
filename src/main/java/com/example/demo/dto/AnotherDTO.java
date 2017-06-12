@@ -1,6 +1,7 @@
 package com.example.demo.dto;
 
 import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -13,6 +14,7 @@ import java.util.Objects;
 public class AnotherDTO {
 
     @NotNull
+    @Min(0)
     private Integer id;
     @NotNull
     @DecimalMin("0.00")
