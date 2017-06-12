@@ -1,8 +1,9 @@
-package com.example.demo;
+package com.example.demo.dto;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * Represents a HTTP request payload
@@ -42,5 +43,20 @@ public class AnotherDTO {
 
     public void setSomeMagicNumber(BigDecimal someMagicNumber) {
         this.someMagicNumber = someMagicNumber;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AnotherDTO)) return false;
+        AnotherDTO that = (AnotherDTO) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(amount, that.amount) &&
+                Objects.equals(someMagicNumber, that.someMagicNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, amount, someMagicNumber);
     }
 }

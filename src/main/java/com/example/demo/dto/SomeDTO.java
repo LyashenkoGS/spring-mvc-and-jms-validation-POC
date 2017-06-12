@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.dto;
 
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -6,6 +6,7 @@ import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 /**
  * Represents an HTTP request payload
@@ -58,4 +59,19 @@ public class SomeDTO {
         this.pricePer1KgOfRaspberry = pricePer1KgOfRaspberry;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SomeDTO)) return false;
+        SomeDTO someDTO = (SomeDTO) o;
+        return Objects.equals(id, someDTO.id) &&
+                Objects.equals(name, someDTO.name) &&
+                Objects.equals(numberOfSomething, someDTO.numberOfSomething) &&
+                Objects.equals(pricePer1KgOfRaspberry, someDTO.pricePer1KgOfRaspberry);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, numberOfSomething, pricePer1KgOfRaspberry);
+    }
 }
