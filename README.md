@@ -40,7 +40,7 @@ POST localhost:8080/anotherdto
  ### Benchmarks 
  
  Benchmarks has been performed in Junit tests and results may be imprecise.
-Result is an average time of a HTTP request processing executed 2000 times in a @Test
+Result is an average time of a HTTP request processing executed 2000 times in a @Test.
  
  #### plain methods invocation
  ##### SomeDTO
@@ -86,6 +86,25 @@ Result is an average time of a HTTP request processing executed 2000 times in a 
 * 1542071.70 ns - invalid on javax validator
 * 1374212.49 ns - invalid on a custom validator
 
+  #### custom init binder with 22 org.springframework.validation.Validator in an ApplicationContext
+  ##### SomeDTO
+* 1336569.17 ns - valid
+* 1422664.00 ns - invalid on javax validator
+* 1519208.23 ns- invalid on a custom validator
+   
+  ##### AnotherDTO
+* 1199839.20 ns - valid
+* 1433293.67 ns - invalid on javax validator
+* 1324509.38 ns - invalid on a custom validator
+
+
+Seems like results getting better with each test run, so last one 
+measures may show better results because of this.
+  
+  
+## Summary
+  Custom init binder allows to avoid code duplication in controllers
+  and adds acceptable overhead for non latency critical applications
   
 
   
