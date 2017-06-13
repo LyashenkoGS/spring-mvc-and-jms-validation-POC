@@ -6,7 +6,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 
 /**
  * @author Grigoriy Lyashenko.
@@ -25,8 +24,8 @@ public class AnotherDTOValidator implements Validator {
         BigDecimal[] divisionWithRemainder = dto.getSomeMagicNumber().divideAndRemainder(dto.getAmount());
         //pass if there is there is reminder
         if (divisionWithRemainder[1].compareTo(BigDecimal.ZERO) != 0) {
-            errors.rejectValue("someMagicNumber", "should be divided to amount without a reminder\n" +
-                    "actual :" + Arrays.toString(divisionWithRemainder));
+            errors.rejectValue("someMagicNumber", "expected: should be divided to amount without a reminder " +
+                    "actual :" + "remainder after division = " + divisionWithRemainder[1]);
         }
     }
 }

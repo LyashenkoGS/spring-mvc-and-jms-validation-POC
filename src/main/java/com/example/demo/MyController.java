@@ -27,7 +27,7 @@ public class MyController {
     private Validator[] validators;
 
     /**
-     * Initialize webDataBinder with all suitable custom validators
+     * Adds to a webDataBinder all suitable custom validators
      *
      * @param webDataBinder an internal spring component
      */

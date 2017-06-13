@@ -8,33 +8,48 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @ControllerAdvice
 public class ValidationExceptionHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    ResponseEntity<String> validationException(MethodArgumentNotValidException ex) {
-        return new ResponseEntity<String>(parseErrors(ex.getBindingResult().getAllErrors()), HttpStatus.UNPROCESSABLE_ENTITY);
+    ResponseEntity<List<String>> validationException(MethodArgumentNotValidException ex) {
+        return new ResponseEntity<>(parseErrors(ex.getBindingResult().getAllErrors()), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     /**
      * @param errorsList list of validation errors produced by SpringMVC framework
      * @return human readable errors representation
      */
-    private String parseErrors(List<ObjectError> errorsList) {
-        StringBuilder stringBuilder = new StringBuilder();
+    private List<String> parseErrors(List<ObjectError> errorsList) {
+        List<String> errorsMessages = new LinkedList<>();
         for (ObjectError error : errorsList) {
+            //parse field error
             if (error.getClass().equals(FieldError.class)) {
-                FieldError fieldError = (FieldError) error;
-                String errorMessage = fieldError.getField() + " = " + fieldError.getRejectedValue() + " failed validation \n" +
-                        "reason: " + fieldError.getDefaultMessage() + "\n";
-                stringBuilder.append(errorMessage);
-            } else {
-                stringBuilder.append(error.getCode()).append("\n");
+                errorsMessages.add(parseFieldError(error));
+            }
+            //parse an object error
+            else {
+                errorsMessages.add(error.getCode());
             }
         }
-        return stringBuilder.toString();
+        return errorsMessages;
+    }
+
+    private String parseFieldError(ObjectError error) {
+        FieldError fieldError = (FieldError) error;
+        //parse custom exception
+        if (error.getDefaultMessage() == null) {
+            return fieldError.getField() + " = " + fieldError.getRejectedValue()
+                    + " failed validation " + "reason: " + fieldError.getCode();
+        }
+        //parse javax validation error
+        else {
+            return fieldError.getField() + " = " + fieldError.getRejectedValue()
+                    + " failed validation " + "reason: " + fieldError.getDefaultMessage();
+        }
     }
 
 }
