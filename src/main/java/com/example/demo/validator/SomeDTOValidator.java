@@ -22,10 +22,10 @@ public class SomeDTOValidator implements Validator {
     public void validate(Object target, Errors errors) {
         SomeDTO dto = ((SomeDTO) target);
         BigDecimal[] divisionWithRemainder = dto.getNumberOfSomething().divideAndRemainder(dto.getPricePer1KgOfRaspberry());
-        System.out.println("division with remainder result: " + Arrays.toString(divisionWithRemainder));
         //pass if there is there is reminder
         if (divisionWithRemainder[1].compareTo(BigDecimal.ZERO) != 0) {
-            errors.rejectValue("numberOfSomething", "should be divided to getPricePer1KgOfRaspberry without a reminder");
+            errors.rejectValue("numberOfSomething", "should be divided to amount without a reminder\n" +
+                    "actual :" + Arrays.toString(divisionWithRemainder));
         }
     }
 }

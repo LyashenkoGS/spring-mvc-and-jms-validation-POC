@@ -23,10 +23,10 @@ public class AnotherDTOValidator implements Validator {
     public void validate(Object target, Errors errors) {
         AnotherDTO dto = ((AnotherDTO) target);
         BigDecimal[] divisionWithRemainder = dto.getSomeMagicNumber().divideAndRemainder(dto.getAmount());
-        System.out.println("division with remainder result: " + Arrays.toString(divisionWithRemainder));
         //pass if there is there is reminder
         if (divisionWithRemainder[1].compareTo(BigDecimal.ZERO) != 0) {
-            errors.rejectValue("someMagicNumber", "should be divided to amount without a reminder");
+            errors.rejectValue("someMagicNumber", "should be divided to amount without a reminder\n" +
+                    "actual :" + Arrays.toString(divisionWithRemainder));
         }
     }
 }

@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.math.BigDecimal;
 
@@ -59,10 +60,11 @@ public class MyControllerTest {
         //given a corrupted dto
         BigDecimal invalidValue = someDTO.getNumberOfSomething().add(BigDecimal.ONE);
         someDTO.setNumberOfSomething(invalidValue);
-        mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/somedto")
+        String response = mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/somedto")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(mapper.writeValueAsString(someDTO)))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isUnprocessableEntity()).andReturn().getResponse().getContentAsString();
+        System.out.println(response);
         //so a service method SHOULDN'T be invoked
         Mockito.verify(service, VerificationModeFactory.noMoreInteractions()).processSomeDTO(someDTO);
     }
@@ -71,10 +73,11 @@ public class MyControllerTest {
     public void invalidSomeDtoRequest_javaxValidator() throws Exception {
         //given a corrupted dto
         someDTO.setId(-5);
-        mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/somedto")
+        String responseBody = mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/somedto")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(mapper.writeValueAsString(someDTO)))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isUnprocessableEntity()).andReturn().getResponse().getContentAsString();
+        System.out.println(responseBody);
         //so a service method SHOULDN'T be invoked
         Mockito.verify(service, VerificationModeFactory.noMoreInteractions()).processSomeDTO(someDTO);
     }
@@ -94,10 +97,11 @@ public class MyControllerTest {
         //given a corrupted dto
         BigDecimal invalidValue = anotherDTO.getSomeMagicNumber().add(BigDecimal.ONE);
         anotherDTO.setSomeMagicNumber(invalidValue);
-        mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/anotherdto")
+        String response = mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/anotherdto")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(mapper.writeValueAsString(anotherDTO)))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isUnprocessableEntity()).andReturn().getResponse().getContentAsString();
+        System.out.println(response);
         //so a service method SHOULDN'T be invoked
         Mockito.verify(service, VerificationModeFactory.noMoreInteractions()).processAnotherDTO(anotherDTO);
     }
@@ -106,10 +110,11 @@ public class MyControllerTest {
     public void invalidAnotherDtoRequest_javaxValidator() throws Exception {
         //given a corrupted dto
         anotherDTO.setId(-33);
-        mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/anotherdto")
+        String response = mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/anotherdto")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(mapper.writeValueAsString(anotherDTO)))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isUnprocessableEntity()).andReturn().getResponse().getContentAsString();
+        System.out.println(response);
         //so a service method SHOULDN'T be invoked
         Mockito.verify(service, VerificationModeFactory.noMoreInteractions()).processAnotherDTO(anotherDTO);
     }
