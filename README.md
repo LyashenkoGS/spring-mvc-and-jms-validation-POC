@@ -45,15 +45,14 @@ POST localhost:8080/anotherdto
  
  #### plain methods invocation
  ##### SomeDTO
- * valid
- * invalid on javax validator
- * invalid on a custom validator
- 
+ * 990633.72 ns - valid
+ * 1201762.22 ns - invalid on javax validator
+ * 1269818.67 ns - invalid on a custom validator
+   
  ##### AnotherDTO
-  * valid
-  * invalid on javax validator
-  * invalid on a custom validator
-  
+ * 947419.52 ns - valid
+ * 1175909.58 ns - invalid on javax validator
+ * 1095785.90 ns - invalid on a custom validator
  
  #### custom init binder
  ##### SomeDTO
