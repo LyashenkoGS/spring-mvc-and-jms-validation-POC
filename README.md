@@ -75,6 +75,17 @@ Result is an average time of a HTTP request processing executed 2000 times in a 
 * 1175909.58 ns - invalid on javax validator
 * 1298877.68 ns - invalid on a custom validator
 
+  #### custom init binder with 12 org.springframework.validation.Validator in an ApplicationContext
+  ##### SomeDTO
+* 1342343.95 ns - valid
+* 1464712.75 ns - invalid on javax validator
+* 1436413.91 ns - invalid on a custom validator
+   
+  ##### AnotherDTO
+* 1202006.61 ns - valid
+* 1542071.70 ns - invalid on javax validator
+* 1374212.49 ns - invalid on a custom validator
+
   
 
   
