@@ -36,6 +36,40 @@ POST localhost:8080/anotherdto
 
 {"id":1,"amount":10,"someMagicNumber":21}
  
+ 
+ ### Benchmarks 
+ 
+ Benchmarks has been performed in Junit tests and results may be imprecise.
+
+ 
+ 
+ #### plain methods invocation
+ ##### SomeDTO
+ * valid
+ * invalid on javax validator
+ * invalid on a custom validator
+ 
+ ##### AnotherDTO
+  * valid
+  * invalid on javax validator
+  * invalid on a custom validator
+  
+ 
+ #### custom init binder
+ ##### SomeDTO
+ * 1314443.03 ns - valid
+ * 1225969.91 ns - invalid on javax validator
+ * 1271690.38 ns - invalid on a custom validator
+ 
+ ##### AnotherDTO
+  * 1087886.78 ns - valid
+  * 1301572.77 ns - invalid on javax validator
+  * 1175526.55 ns - invalid on a custom validator
+  
+   
+ 
+ 
+ 
 
 
   

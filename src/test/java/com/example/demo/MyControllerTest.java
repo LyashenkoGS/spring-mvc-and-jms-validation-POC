@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.internal.verification.VerificationModeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,9 +15,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.math.BigDecimal;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,9 +33,6 @@ public class MyControllerTest {
     @Autowired
     private ObjectMapper mapper;
 
-    @SpyBean
-    private MyService service;
-
     private SomeDTO someDTO;
     private AnotherDTO anotherDTO;
 
@@ -48,11 +44,21 @@ public class MyControllerTest {
 
     @Test
     public void validSomeDtoRequest() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/somedto")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(mapper.writeValueAsString(someDTO)));
-        //so a service method should be invoked
-        Mockito.verify(service, VerificationModeFactory.only()).processSomeDTO(someDTO);
+        List<Long> executionTimes = new LinkedList<>();
+        int iterationsNumber = 2000;
+        for (int i = 0; i < iterationsNumber; i++) {
+            long startTime = System.nanoTime();
+            mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/somedto")
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(mapper.writeValueAsString(someDTO)));
+            long endTime = System.nanoTime();
+            long executionTime = endTime - startTime;
+            executionTimes.add(executionTime);
+            System.out.println("Total execution time: " + executionTime + "ns");
+        }
+        Long totalExecutionTimes = executionTimes.stream().reduce(0L, (aLong, aLong2) -> aLong + aLong2);
+        BigDecimal averageExecutionTime = BigDecimal.valueOf(totalExecutionTimes).divide(BigDecimal.valueOf(iterationsNumber), 2, BigDecimal.ROUND_HALF_UP);
+        System.out.println("Average execution time : " + averageExecutionTime + " ns");
     }
 
     @Test
@@ -60,36 +66,63 @@ public class MyControllerTest {
         //given a corrupted dto
         BigDecimal invalidValue = someDTO.getNumberOfSomething().add(BigDecimal.ONE);
         someDTO.setNumberOfSomething(invalidValue);
-        String response = mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/somedto")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(mapper.writeValueAsString(someDTO)))
-                .andExpect(status().isUnprocessableEntity()).andReturn().getResponse().getContentAsString();
-        System.out.println(response);
-        //so a service method SHOULDN'T be invoked
-        Mockito.verify(service, VerificationModeFactory.noMoreInteractions()).processSomeDTO(someDTO);
+        List<Long> executionTimes = new LinkedList<>();
+        int iterationsNumber = 2000;
+        for (int i = 0; i < iterationsNumber; i++) {
+            long startTime = System.nanoTime();
+            String response = mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/somedto")
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(mapper.writeValueAsString(someDTO)))
+                    .andExpect(status().isUnprocessableEntity()).andReturn().getResponse().getContentAsString();
+            long endTime = System.nanoTime();
+            long executionTime = endTime - startTime;
+            executionTimes.add(executionTime);
+            System.out.println("Total execution time: " + executionTime + "ns");
+        }
+        Long totalExecutionTimes = executionTimes.stream().reduce(0L, (aLong, aLong2) -> aLong + aLong2);
+        BigDecimal averageExecutionTime = BigDecimal.valueOf(totalExecutionTimes).divide(BigDecimal.valueOf(iterationsNumber), 2, BigDecimal.ROUND_HALF_UP);
+        System.out.println("Average execution time : " + averageExecutionTime + " ns");
     }
 
     @Test
     public void invalidSomeDtoRequest_javaxValidator() throws Exception {
         //given a corrupted dto
         someDTO.setId(-5);
-        String responseBody = mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/somedto")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(mapper.writeValueAsString(someDTO)))
-                .andExpect(status().isUnprocessableEntity()).andReturn().getResponse().getContentAsString();
-        System.out.println(responseBody);
-        //so a service method SHOULDN'T be invoked
-        Mockito.verify(service, VerificationModeFactory.noMoreInteractions()).processSomeDTO(someDTO);
+        List<Long> executionTimes = new LinkedList<>();
+        int iterationsNumber = 2000;
+        for (int i = 0; i < iterationsNumber; i++) {
+            long startTime = System.nanoTime();
+            String responseBody = mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/somedto")
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(mapper.writeValueAsString(someDTO)))
+                    .andExpect(status().isUnprocessableEntity()).andReturn().getResponse().getContentAsString();
+            long endTime = System.nanoTime();
+            long executionTime = endTime - startTime;
+            executionTimes.add(executionTime);
+            System.out.println("Total execution time: " + executionTime + "ns");
+        }
+        Long totalExecutionTimes = executionTimes.stream().reduce(0L, (aLong, aLong2) -> aLong + aLong2);
+        BigDecimal averageExecutionTime = BigDecimal.valueOf(totalExecutionTimes).divide(BigDecimal.valueOf(iterationsNumber), 2, BigDecimal.ROUND_HALF_UP);
+        System.out.println("Average execution time : " + averageExecutionTime + " ns");
     }
-
 
     @Test
     public void validAnotherDtoRequest() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/anotherdto")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(mapper.writeValueAsString(anotherDTO)));
-        //so a service method should be invoked
-        Mockito.verify(service, VerificationModeFactory.only()).processAnotherDTO(anotherDTO);
+        List<Long> executionTimes = new LinkedList<>();
+        int iterationsNumber = 2000;
+        for (int i = 0; i < iterationsNumber; i++) {
+            long startTime = System.nanoTime();
+            mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/anotherdto")
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(mapper.writeValueAsString(anotherDTO)));
+            long endTime = System.nanoTime();
+            long executionTime = endTime - startTime;
+            executionTimes.add(executionTime);
+            System.out.println("Total execution time: " + executionTime + "ns");
+        }
+        Long totalExecutionTimes = executionTimes.stream().reduce(0L, (aLong, aLong2) -> aLong + aLong2);
+        BigDecimal averageExecutionTime = BigDecimal.valueOf(totalExecutionTimes).divide(BigDecimal.valueOf(iterationsNumber), 2, BigDecimal.ROUND_HALF_UP);
+        System.out.println("Average execution time : " + averageExecutionTime + " ns");
     }
 
     @Test
@@ -97,26 +130,44 @@ public class MyControllerTest {
         //given a corrupted dto
         BigDecimal invalidValue = anotherDTO.getSomeMagicNumber().add(BigDecimal.ONE);
         anotherDTO.setSomeMagicNumber(invalidValue);
-        String response = mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/anotherdto")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(mapper.writeValueAsString(anotherDTO)))
-                .andExpect(status().isUnprocessableEntity()).andReturn().getResponse().getContentAsString();
-        System.out.println(response);
-        //so a service method SHOULDN'T be invoked
-        Mockito.verify(service, VerificationModeFactory.noMoreInteractions()).processAnotherDTO(anotherDTO);
+        List<Long> executionTimes = new LinkedList<>();
+        int iterationsNumber = 2000;
+        for (int i = 0; i < iterationsNumber; i++) {
+            long startTime = System.nanoTime();
+            String response = mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/anotherdto")
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(mapper.writeValueAsString(anotherDTO)))
+                    .andExpect(status().isUnprocessableEntity()).andReturn().getResponse().getContentAsString();
+            long endTime = System.nanoTime();
+            long executionTime = endTime - startTime;
+            executionTimes.add(executionTime);
+            System.out.println("Total execution time: " + executionTime + "ns");
+        }
+        Long totalExecutionTimes = executionTimes.stream().reduce(0L, (aLong, aLong2) -> aLong + aLong2);
+        BigDecimal averageExecutionTime = BigDecimal.valueOf(totalExecutionTimes).divide(BigDecimal.valueOf(iterationsNumber), 2, BigDecimal.ROUND_HALF_UP);
+        System.out.println("Average execution time : " + averageExecutionTime + " ns");
     }
 
     @Test
     public void invalidAnotherDtoRequest_javaxValidator() throws Exception {
         //given a corrupted dto
         anotherDTO.setId(-33);
-        String response = mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/anotherdto")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(mapper.writeValueAsString(anotherDTO)))
-                .andExpect(status().isUnprocessableEntity()).andReturn().getResponse().getContentAsString();
-        System.out.println(response);
-        //so a service method SHOULDN'T be invoked
-        Mockito.verify(service, VerificationModeFactory.noMoreInteractions()).processAnotherDTO(anotherDTO);
+        List<Long> executionTimes = new LinkedList<>();
+        int iterationsNumber = 2000;
+        for (int i = 0; i < iterationsNumber; i++) {
+            long startTime = System.nanoTime();
+            String response = mvc.perform(MockMvcRequestBuilders.request(HttpMethod.POST, "/anotherdto")
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(mapper.writeValueAsString(anotherDTO)))
+                    .andExpect(status().isUnprocessableEntity()).andReturn().getResponse().getContentAsString();
+            long endTime = System.nanoTime();
+            long executionTime = endTime - startTime;
+            executionTimes.add(executionTime);
+            System.out.println("Total execution time: " + executionTime + "ns");
+        }
+        Long totalExecutionTimes = executionTimes.stream().reduce(0L, (aLong, aLong2) -> aLong + aLong2);
+        BigDecimal averageExecutionTime = BigDecimal.valueOf(totalExecutionTimes).divide(BigDecimal.valueOf(iterationsNumber), 2, BigDecimal.ROUND_HALF_UP);
+        System.out.println("Average execution time : " + averageExecutionTime + " ns");
     }
 
 }
